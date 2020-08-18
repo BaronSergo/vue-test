@@ -3,16 +3,10 @@
     <div class="modal">
       <div class="modal__body">
         <label for="title">Введите название блока</label>
-        <input type="text" v-model="titleBlock" id="title" />
+        <input type="text" v-model="label" id="title" />
       </div>
       <div class="modal__btns">
-        <Button
-          v-if="editMode"
-          type-btn="add"
-          title="Сохранить изменение"
-          v-on:click.native="saveChange"
-        />
-        <Button v-else type-btn="add" title="Добавить блок" v-on:click.native="addBlock" />
+        <Button type-btn="add" title="Сохранить изменение" v-on:click.native="saveChange" />
         <Button type-btn="cancel" title="Отменить" v-on:click.native="closeModal" />
       </div>
       <button type="button" class="modal__close" v-on:click="closeModal">X</button>
@@ -28,20 +22,17 @@ export default {
   data() {
     return {
       item: Object(),
-      titleBlock: null,
-      editMode: false,
+      label: null,
     }
   },
   methods: {
     beforeOpen(event) {
       /*
-        Если при открытие модального окна есть входящие параметры, то определить это как редактирование эелемента (editMode)
         Обработка входящих параметов
        */
       if (event.params) {
-        this.editMode = true
         this.item = event.params
-        this.titleBlock = this.item.title
+        this.label = this.item.label
       }
     },
     saveChange() {
@@ -49,21 +40,9 @@ export default {
         Функция сохранения новых данных
         При вызове - сбрасываем все переменные, закрываем модальное окно, передаем в root.emit новые значения и выбранный элемент
        */
-      this.$root.$emit('SAVE_NEW_TITLE', { titleBlock: this.titleBlock, newItem: this.item })
+      this.$root.$emit('SAVE_NEW_TITLE', { label: this.label, selectItem: this.item })
       this.$modal.hide('blockInfo')
-      this.titleBlock = null
-      this.editMode = false
-    },
-    addBlock() {
-      /*
-        Функция добавления нового элемента на страницу
-        При вызове - если не пустое поле заголовка, закрываем мадальное окно, сбрасываем переменные
-       */
-      if (this.titleBlock) {
-        this.$root.$emit('ADD_NEW_BLOCK', this.titleBlock)
-        this.$modal.hide('blockInfo')
-        this.titleBlock = null
-      }
+      this.label = null
     },
     closeModal() {
       /*
@@ -71,8 +50,7 @@ export default {
         При вызове - закрываем модальное окно, сбрасываем все переменные
        */
       this.$modal.hide('blockInfo')
-      this.titleBlock = null
-      this.editMode = false
+      this.label = null
     },
   },
 }
